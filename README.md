@@ -17,7 +17,7 @@
 
 ### Latest Version Script
 ```lua
-loadstring(game:HttpGet("YOUR_RAW_URL_HERE/sigma_explorer.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/robertcosta446-maker/SIGMA-EXPLORER/main/sigma_explorer.lua"))()
 ```
 
 ## Building from Source
