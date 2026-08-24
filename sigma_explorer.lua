@@ -2018,81 +2018,31 @@ local function main()
 			end
 		end})
 
-		context:Register("TELEPORT_TO",{Name = "Teleport To", IconMap = Explorer.MiscIcons, Icon = "TeleportTo", OnClick = function()
+				context:Register("TELEPORT_TO",{Name = "Teleport To", IconMap = Explorer.MiscIcons, Icon = "TeleportTo", OnClick = function()
 			local sList = selection.List
-			local character = plr.Character
-			local plrRP = character and character:FindFirstChild("HumanoidRootPart")
-
+			local plrRP = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
 			if not plrRP then return end
-
-			local offset = Settings.Explorer.TeleportToOffset
-			local targetPos = nil
 
 			for _,node in next, sList do
 				local Obj = node.Obj
-
 				if Obj:IsA("BasePart") then
-					targetPos = Obj.Position + offset
+					plrRP.CFrame = Obj.CFrame
 					break
 				elseif Obj:IsA("Model") then
 					if Obj.PrimaryPart then
-						targetPos = Obj.PrimaryPart.Position + offset
+						plrRP.CFrame = Obj.PrimaryPart.CFrame
 						break
 					else
 						local part = Obj:FindFirstChildWhichIsA("BasePart", true)
 						if part then
-							targetPos = part.Position + offset
-							break
-						elseif Obj.WorldPivot then
-							targetPos = Obj.WorldPivot.Position + offset
+							plrRP.CFrame = part.CFrame
 							break
 						end
-					end
-				elseif Obj:IsA("Attachment") then
-					targetPos = Obj.WorldPosition + offset
-					break
-				else
-					local part = Obj:FindFirstChildWhichIsA("BasePart", true)
-					if part then
-						targetPos = part.Position + offset
-						break
 					end
 				end
 			end
 
-			if not targetPos then return end
-
-			-- Incremental teleport for long distances
-			local distance = (targetPos - plrRP.Position).Magnitude
-			local STEP_SIZE = 100
-
-			if distance > STEP_SIZE then
-				-- Teleport in steps to avoid rubber-banding
-				task.spawn(function()
-					local startPos = plrRP.Position
-					local direction = (targetPos - startPos).Unit
-					local steps = math.ceil(distance / STEP_SIZE)
-
-					for i = 1, steps - 1 do
-						if not plrRP or not plrRP.Parent then return end
-						local stepPos = startPos + direction * (STEP_SIZE * i)
-						plrRP.CFrame = CFrame.new(stepPos)
-						plrRP.Velocity = Vector3.new(0, 0, 0)
-						if plrRP:FindFirstChild("BodyVelocity") then plrRP.BodyVelocity:Destroy() end
-						task.wait(0.05)
-					end
-
-					-- Final position
-					if plrRP and plrRP.Parent then
-						plrRP.CFrame = CFrame.new(targetPos)
-						plrRP.Velocity = Vector3.new(0, 0, 0)
-					end
-				end)
-			else
-				-- Short distance: direct teleport
-				plrRP.CFrame = CFrame.new(targetPos)
-				plrRP.Velocity = Vector3.new(0, 0, 0)
-			end
+			rightClickContext:Hide()
 		end})
 
 		local OldAnimation
